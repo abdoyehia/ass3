@@ -1,0 +1,269 @@
+#include <iostream>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+string convert(int n){
+    int x=n;
+    string res="";
+    while(x>0){
+        int t=x%10;
+        string temp="";
+        temp+=(char)('0'+t);
+        temp+=res;
+        res=temp;
+        x/=10;
+    }
+    if(res.size()<3){
+        if(res.size()<2){
+            string temp="00";
+            temp+=res;
+            res=temp;
+        }
+        else {
+            string temp="0";
+            temp+=res;
+            res=temp;
+        }
+    }
+    return res;
+}
+
+class BankAccount{
+protected:
+    int Account_Type;
+    string Account_ID;
+    int Balance;
+public:
+    BankAccount(){
+        Balance=0;
+    }
+    BankAccount(int val, int minbal=0){
+        if(val >= minbal)Balance = val;
+        else {
+            while (val < minbal){
+                cout<<"The Balance Is Less Than The Minimum Balance Enter The Balance Again : ";
+                cin>>val;
+            }
+            Balance = val;
+        }
+    }
+    void set_AccountID(string n = ""){
+        if(n == "")getline(cin,Account_ID);
+        else Account_ID = n;
+    }
+    void set_Balance(int val = 0, int MinBal = 0){
+        if(!val){
+            cout<<"Please Enter the Starting Balance =========> ";
+            cin>>val;
+        }
+        while(val < MinBal){
+            cout<<"Sorry. This is less than what you can Entering.\n";
+            cout<<"Please Enter the Starting Balance =========> ";
+            cin>>val;
+        }
+        Balance = val;
+    }
+    void set_type(int n){
+        Account_Type = n;
+    }
+    void Withdraw(int money = 0 ,int MinBal = 0){
+        if(!money){
+            cout<<"Please Enter The Amount to Withdraw =========> ";
+            cin>>money;
+        }
+        while(money > Balance-MinBal){
+            cout<<"Sorry. This is more than what you can withdraw.\n";
+            cout<<"Please Enter The Amount to Withdraw =========> ";
+            cin>>money;
+        }
+        Balance -= money;
+        cout<<"Thank You\nAccount ID : "<<Account_ID<<'\n'<<"New Balance : "<<Balance<<'\n';
+    }
+    void Deposit(int val = 0, int MinDep =0 ){
+        if(!val){
+            cout<<"Enter The Amount Of Money You Want To Deposit =========> ";
+            cin>>val;
+        }
+        while (val < MinDep){
+            cout<<"Sorry. This is less than what you can Deposit.\n";
+            cout<<"Enter The Amount Of Money You Want To Deposit =========> ";
+            cin>>val;
+        }
+        Balance += val;
+        cout<<"Thank You\nAccount ID : "<<Account_ID<<'\n'<<"New Balance : "<<Balance<<'\n';
+    }
+    int get_Balance(){
+        return Balance;
+    }
+    string get_AccountID(){
+        return Account_ID;
+    }
+};
+
+class SavingBankAccount : public BankAccount{
+protected:
+    int minimumBalance;
+public:
+    SavingBankAccount(){
+        minimumBalance=1000;
+    }
+    SavingBankAccount(int bal, int MinBalance) : BankAccount(bal, MinBalance)
+    {
+        minimumBalance = MinBalance;
+    }
+    void setMinBal(int val = 0){
+        if(!val){
+            cout<<"Enter The Minimum Balance =========> ";
+            cin>>val;
+        }
+        minimumBalance = val;
+    }
+    int get_MinBal(){
+        return minimumBalance;
+    }
+};
+
+class Client{
+    string Name;
+    string Address;
+    string Phone_Number;
+    string Account_ID;
+    int Account_Type;
+public:
+    BankAccount * Acc1;
+    SavingBankAccount * Acc2;
+
+    Client(){
+        Name = Address = Phone_Number = Account_ID = "";
+        Acc1 = Acc2 = 0;
+    }
+    void set_Type(){
+        cout<<"What Type of Account Do You Like? (1) Basic (2) Saving – Type 1 or 2 =========> ";
+        cin>>Account_Type;
+        if(Account_Type == 1){
+            Acc1 = new BankAccount;
+            Acc1->set_Balance();
+            Acc1->set_type(1);
+            Acc1->set_AccountID(Account_ID);
+            cout<<"An account was created with ID "<<Account_ID<<" and Starting Balance "
+            <<Acc1->get_Balance()<<" L.E.\n";
+        }
+        else {
+            Acc2 = new SavingBankAccount;
+            Acc2->setMinBal();
+            Acc2->set_Balance(0,Acc2->get_MinBal());
+            Acc2->set_type(2);
+            Acc2->set_AccountID(Account_ID);
+            cout<<"An account was created with ID "<<Account_ID<<" and Starting Balance "
+            <<Acc2->get_Balance()<<" L.E.\n";
+        }
+    }
+    void set_name(){
+        cout<<"Enter The Client Name ==================> ";
+        getline(cin,Name);
+    }
+    void set_address(){
+        cout<<"Enter The Client Address ==================> ";
+        getline(cin,Address);
+    }
+    void set_phone_number(){
+        cout<<"Enter The Client Phone ==================> ";
+        getline(cin,Phone_Number);
+    }
+    void set_account_id(string val){
+        Account_ID = val;
+    }
+    string get_Account_ID(){return Account_ID;}
+    string get_name() {return Name;}
+    string get_phone() {return Phone_Number;}
+    string get_address() {return Address;}
+    int get_type(){
+        return Account_Type;
+    }
+};
+
+int main()
+{
+    vector<Client> Customers;
+    string id="FCI-";
+    int choice , counter=0;
+    do{
+        cout<<"Welcome to FCI Banking Application";
+        cout<<"\n1. Create a New Account";
+        cout<<"\n2. List Clients and Accounts";
+        cout<<"\n3. Withdraw Money";
+        cout<<"\n4. Deposit Money";
+        cout<<"\n5. To Exit\n\n";
+        cout<<"Enter The Choice ==================> ";
+        cin>>choice;
+        if(choice == 1){
+            counter++;
+            cin.ignore();
+            Client x;
+            x.set_name();
+            x.set_address();
+            x.set_phone_number();
+            string num=convert(counter);
+            string temp=id+num;
+            x.set_account_id(temp);
+            x.set_Type();
+            Customers.push_back(x);
+        }
+        if(choice == 2){
+            for(int i=0; i<counter; i++){
+                cout<<"-------------------------- "<<Customers[i].get_name()<<" --------------------------\n";
+                cout<<"Address : "<<Customers[i].get_address()<<'\n';
+                cout<<"Phone Number : "<<Customers[i].get_phone()<<'\n';
+                cout<<"Account ID : "<<Customers[i].get_Account_ID();
+                if(Customers[i].get_type() == 1)cout<<"  (Basic)\n";
+                else cout<<"  (Saving)\n";
+                if(Customers[i].get_type() == 1)
+                    cout<<"Balance : "<<Customers[i].Acc1->get_Balance()<<'\n';
+                else cout<<"Balance : "<<Customers[i].Acc2->get_Balance()<<'\n';
+            }
+        }
+        if(choice == 3){
+            string ID;
+            cout<<"Please Enter Account ID (e.g., FCI-015) =========> ";
+            cin>>ID; cout<<"Account ID : "<<ID<<'\n';
+            for(int i=0; i<counter; i++){
+                if(Customers[i].get_Account_ID() == ID){
+                    cout<<"Account Type : ";
+                    if(Customers[i].get_type() == 1){
+                        cout<<"Basic\nBalance : "<<Customers[i].Acc1->get_Balance()<<'\n';
+                        Customers[i].Acc1->Withdraw();
+                    }
+                    else {
+                        cout<<"Saving\nBalance : "<<Customers[i].Acc2->get_Balance()<<'\n';
+                        Customers[i].Acc2->Withdraw(0,Customers[i].Acc2->get_MinBal());
+                    }
+                }
+            }
+        }
+        if(choice == 4){
+            string ID;
+            cout<<"Please Enter Account ID (e.g., FCI-015) =========> ";
+            cin>>ID; cout<<"Account ID : "<<ID<<'\n';
+            for(int i=0; i<counter; i++){
+                if(Customers[i].get_Account_ID() == ID){
+                    cout<<"Account Type : ";
+                    if(Customers[i].get_type() == 1){
+                        cout<<"Basic\nBalance : "<<Customers[i].Acc1->get_Balance()<<'\n';
+                        Customers[i].Acc1->Deposit();
+                    }
+                    else {
+                        cout<<"Saving\nBalance : "<<Customers[i].Acc2->get_Balance()<<'\n';
+                        Customers[i].Acc2->Deposit(0,100);
+                    }
+                }
+            }
+        }
+        else if(choice != 5 && choice >4)continue;
+        cout<<"\n--------------------------------------------------------------------\n\n";
+    }
+    while(choice != 5 );
+
+
+    return 0;
+}
