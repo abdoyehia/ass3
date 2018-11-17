@@ -1,0 +1,39 @@
+#include <iostream>
+
+using namespace std;
+int addd(int x)
+{
+    int res;
+    if(x<9)
+    {
+        return x;
+    }
+    res=x%10+addd(x/10);
+    return res;
+}
+
+
+int addadd(int x)
+{
+    int res;
+    if(x<9)
+    {
+        return x;
+    }
+    res=x%10+addadd(x/10);
+    if(res>9){
+    res=res%10+addadd(res/10);
+    }
+    return res;
+}
+
+
+int main()
+{
+    int number;
+    cout << "enter the number!" << endl;
+    cin>>number;
+    cout<<addd(number)<<endl;
+    cout<<addadd(number);
+    return 0;
+}
